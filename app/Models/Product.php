@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
+    protected $appends = ['image_url'];
+
     protected $fillable = [
         'title',
         'price' ,
@@ -21,4 +23,13 @@ class Product extends Model
         'is_featured',
         'image'
     ];
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->image == "") {
+            return asset('/uploads/no-image.jpg');
+        }
+        
+        return asset('/uploads/products/small/'.$this->image);
+    }
 }

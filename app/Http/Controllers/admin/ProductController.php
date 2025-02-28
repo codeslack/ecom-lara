@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\admin;
 
 use App\Models\Product;
+use App\Models\TempImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Intervention\Image\ImageManager;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ProductController extends Controller
 {
@@ -32,7 +35,7 @@ class ProductController extends Controller
             'category' => 'required|exists:categories,id',
             'sku' => 'required|string|unique:products,sku',
             'qty' => 'integer',
-            'status' => 'required|in:0,1',
+            // 'status' => 'required|in:0,1',
         ]);
 
         if ($validator->fails()) {
@@ -56,6 +59,34 @@ class ProductController extends Controller
             'status' => $request->status ?? 1,
             'is_featured' => $request->is_featured ?? 'no',
         ]);
+
+        if (!empty($request->gallery)) {
+            foreach ($request->gallery as $key => $tempImageId) {
+                $tempImage = TempImage::find($tempImageId);
+
+                // Large Thumbnail
+                $extArray = explode('.', $tempImage->name);
+                $ext = end($extArray);
+
+                $imageName = $product->id.'-'.time().'.'.$ext;
+
+                $manager = new ImageManager(Driver::class);
+                $img = $manager->read(public_path('uploads/temp/' . $tempImage->name));
+                $img->scaleDown(1200);
+                $img->save(public_path('uploads/products/large/' . $imageName));
+
+                // Small Thumbnail
+                $manager = new ImageManager(Driver::class);
+                $img = $manager->read(public_path('uploads/temp/' . $tempImage->name));
+                $img->coverDown(400, 460);
+                $img->save(public_path('uploads/products/small/' . $imageName));
+
+                if ( $key === 0 ) {
+                    $product->image = $imageName;
+                    $product->save();
+                }
+            }
+        }
 
         return response()->json([
             'status' => 200,
@@ -99,7 +130,7 @@ class ProductController extends Controller
                 'data' => []
             ], 404);
         }
-        
+
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'price' => 'required|numeric',
@@ -114,7 +145,7 @@ class ProductController extends Controller
                 'status' => 400,
                 'errors' => $validator->errors()
             ], 400);
-        }        
+        }
 
         $product->update($request->all());
 
