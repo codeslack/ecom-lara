@@ -6,7 +6,7 @@ use App\Models\Size;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
-class SizesTableSeeder extends Seeder
+class SizesSeeder extends Seeder
 {
     /**
      * Run the database seeds.

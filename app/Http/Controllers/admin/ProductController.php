@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Models\Product;
 use App\Models\TempImage;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Intervention\Image\ImageManager;
@@ -17,7 +18,10 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::orderBy('created_at', 'DESC')->get();
+        $products = Product::orderBy('created_at', 'DESC')
+                        ->with('product_images')
+                        ->get();
+
         return response()->json([
             'status' => 200,
             'data' => $products
@@ -34,7 +38,7 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'category' => 'required|exists:categories,id',
             'sku' => 'required|string|unique:products,sku',
-            'qty' => 'integer',
+            // 'qty' => 'integer',
             // 'status' => 'required|in:0,1',
         ]);
 
@@ -81,6 +85,11 @@ class ProductController extends Controller
                 $img->coverDown(400, 460);
                 $img->save(public_path('uploads/products/small/' . $imageName));
 
+                ProductImage::create([
+                    'product_id' => $product->id,
+                    'image'      => $imageName
+                ]);
+
                 if ( $key === 0 ) {
                     $product->image = $imageName;
                     $product->save();
@@ -100,7 +109,7 @@ class ProductController extends Controller
      */
     public function show($id)
     {
-        $product = Product::find($id);
+        $product = Product::with('product_images')->find($id);
 
         if ($product === null) {
             return response()->json([

@@ -19,5 +19,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'admin@me.com',
         ]);
+
+        $this->call([
+            SizesSeeder::class,
+        ]);
     }
 }
