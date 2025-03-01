@@ -22,6 +22,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::resource('products', ProductController::class)->except(['create', 'edit']);
     Route::post('temp-images', [TempImageController::class, 'store'])->name('temp-images.store');
     Route::get('temp-images/{id}', [TempImageController::class, 'show'])->name('temp-images.show');
+    Route::post('save-product-image', [ProductController::class, 'saveProductImage']);
+    Route::get('change-product-default-image', [ProductController::class, 'updateDefaultImage']);
+    Route::delete('delete-product-image/{id}', [ProductController::class, 'deleteProductImage']);
 });
 
 

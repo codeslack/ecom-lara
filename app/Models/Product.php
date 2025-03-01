@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\ProductSize;
 use App\Models\ProductImage;
 use Illuminate\Database\Eloquent\Model;
 
@@ -37,5 +38,10 @@ class Product extends Model
     public function product_images()
     {
         return $this->hasMany(ProductImage::class);
+    }
+
+    public function product_sizes()
+    {
+        return $this->hasMany(ProductSize::class);
     }
 }
