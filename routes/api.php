@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\front\Products;
 use App\Http\Controllers\admin\AuthController;
 use App\Http\Controllers\admin\SizeController;
 use App\Http\Controllers\admin\ProductController;
@@ -10,6 +11,12 @@ use App\Http\Controllers\admin\Catalog\BrandController;
 use App\Http\Controllers\admin\Catalog\CategoryController;
 
 Route::post('/admin/login', [AuthController::class, 'authenticate']);
+Route::get('get-latest-products', [Products::class, 'latestProducts']);
+Route::get('get-featured-products', [Products::class, 'featuredProducts']);
+Route::get('get-categories', [Products::class, 'getCategories']);
+Route::get('get-brands', [Products::class, 'getBrands']);
+Route::get('get-products', [Products::class, 'getProducts']);
+Route::get('get-product/{id}', [Products::class, 'getProduct']);
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
